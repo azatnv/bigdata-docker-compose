@@ -38,6 +38,7 @@ ENV PATH $PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 ENV LD_LIBRARY_PATH=$HADOOP_HOME/lib/native
 ENV HADOOP_CONF_DIR $HADOOP_HOME/etc/hadoop
 
+RUN pip install nltk
 
 FROM build_hadoop_base AS build_hadoop
 

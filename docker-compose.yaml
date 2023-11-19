@@ -15,6 +15,7 @@ services:
       - ./hadoop.env
     ports:
       - 9870:9870
+      - 8020:8020
     volumes:
       - hadoop_namenode:/tmp/hadoop-root/
       - ./hadoop_conf/etc:/opt/hadoop/etc
@@ -25,6 +26,8 @@ services:
       target: build_hadoop
     hostname: datanode
     command: ["hdfs", "datanode"]
+    depends_on:
+      - namenode
     env_file:
       - ./hadoop.env
     ports:
@@ -39,6 +42,9 @@ services:
       target: build_hadoop
     hostname: resourcemanager
     command: ["yarn", "resourcemanager"]
+    restart: on-failure
+    depends_on:
+      - namenode
     ports:
       - 8088:8088
     volumes:
@@ -51,6 +57,9 @@ services:
       target: build_hadoop
     hostname: nodemanager1
     command: ["yarn", "nodemanager"]
+    restart: on-failure
+    depends_on:
+      - namenode
     ports:
       - 19888:19888
       - 8042:8042
@@ -61,66 +70,66 @@ services:
       - nodemanager1:/tmp/hadoop-hadoop
       - ./hadoop_conf/etc:/opt/hadoop/etc
 
-  postgres:
-    image: postgres:10
-    hostname: postgres
-    environment:
-      POSTGRES_DB: 'metastore_db'
-      POSTGRES_USER: 'hive'
-      POSTGRES_PASSWORD: 'password'
-    ports:
-      - '5432:5432'
-    volumes:
-      - hive-db:/var/lib/postgresql
-
-  metastore:
-    build:
-      context: hadoop/.
-      target: hive_hadoop
-    hostname: metastore
-    # Сначала запусти меня
-    #    command: ["schematool", "--dbType", "postgres", "--initSchema"]
-    # А уже потом спокойно запускай меня
-    command: [ "hive", "--service", "metastore" ]
-    environment:
-      - HIVE_SERVER2_THRIFT_PORT=10000
-    ports:
-      - 9083:9083
-    expose:
-      - 9083
-    volumes:
-      - ./hadoop_conf/etc:/opt/hadoop/etc
-      - ./hive_conf:/opt/hive/conf
-
-  hiveserver2:
-    build:
-      context: hadoop/.
-      target: hive_hadoop
-    environment:
-      - HIVE_SERVER2_THRIFT_PORT=10000
-    command: [ "hive", "--service", "hiveserver2" , "--hiveconf", "hive.root.logger=INFO,console"]
-    ports:
-      - 10000:10000
-      - 10002:10002
-    expose:
-      - 10000
-      - 10002
-    volumes:
-      - ./hadoop_conf/etc:/opt/hadoop/etc
-      - ./hive_conf:/opt/hive/conf
-
-  jupyter:
-    build:
-      context: hadoop/.
-      target: jupyter_hadoop
-    env_file:
-      - ./hadoop.env
-    ports:
-      - 8888:8888
-    volumes:
-      - ./hadoop_conf/etc:/opt/hadoop/etc
-      - ./notebooks:/opt/notebooks
-    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
+#  postgres:
+#    image: postgres:10
+#    hostname: postgres
+#    environment:
+#      POSTGRES_DB: 'metastore_db'
+#      POSTGRES_USER: 'hive'
+#      POSTGRES_PASSWORD: 'password'
+#    ports:
+#      - '5432:5432'
+#    volumes:
+#      - hive-db:/var/lib/postgresql
+#
+#  metastore:
+#    build:
+#      context: hadoop/.
+#      target: hive_hadoop
+#    hostname: metastore
+#    # Сначала запусти меня
+#    #    command: ["schematool", "--dbType", "postgres", "--initSchema"]
+#    # А уже потом спокойно запускай меня
+#    command: [ "hive", "--service", "metastore" ]
+#    environment:
+#      - HIVE_SERVER2_THRIFT_PORT=10000
+#    ports:
+#      - 9083:9083
+#    expose:
+#      - 9083
+#    volumes:
+#      - ./hadoop_conf/etc:/opt/hadoop/etc
+#      - ./hive_conf:/opt/hive/conf
+#
+#  hiveserver2:
+#    build:
+#      context: hadoop/.
+#      target: hive_hadoop
+#    environment:
+#      - HIVE_SERVER2_THRIFT_PORT=10000
+#    command: [ "hive", "--service", "hiveserver2" , "--hiveconf", "hive.root.logger=INFO,console"]
+#    ports:
+#      - 10000:10000
+#      - 10002:10002
+#    expose:
+#      - 10000
+#      - 10002
+#    volumes:
+#      - ./hadoop_conf/etc:/opt/hadoop/etc
+#      - ./hive_conf:/opt/hive/conf
+#
+#  jupyter:
+#    build:
+#      context: hadoop/.
+#      target: jupyter_hadoop
+#    env_file:
+#      - ./hadoop.env
+#    ports:
+#      - 8888:8888
+#    volumes:
+#      - ./hadoop_conf/etc:/opt/hadoop/etc
+#      - ./notebooks:/opt/notebooks
+#    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
 
 #  Вот этого монстра запускай на свой страх и риск
 #  zeppelin:
