@@ -8,9 +8,9 @@ services:
     hostname: namenode
 
 # Сначала запусти меня
-#    command: ["hdfs", "namenode", "-format", "-force"]
+    command: ["hdfs", "namenode", "-format", "-force"]
 # А уже потом спокойно запускай меня
-    command: ["hdfs", "namenode"]
+#    command: ["hdfs", "namenode"]
     env_file:
       - ./hadoop.env
     ports:
@@ -45,6 +45,8 @@ services:
     restart: on-failure
     depends_on:
       - namenode
+    env_file:
+      - ./hadoop.env
     ports:
       - 8088:8088
     volumes:
@@ -60,6 +62,8 @@ services:
     restart: on-failure
     depends_on:
       - namenode
+    env_file:
+      - ./hadoop.env
     ports:
       - 19888:19888
       - 8042:8042
@@ -118,18 +122,18 @@ services:
 #      - ./hadoop_conf/etc:/opt/hadoop/etc
 #      - ./hive_conf:/opt/hive/conf
 #
-#  jupyter:
-#    build:
-#      context: hadoop/.
-#      target: jupyter_hadoop
-#    env_file:
-#      - ./hadoop.env
-#    ports:
-#      - 8888:8888
-#    volumes:
-#      - ./hadoop_conf/etc:/opt/hadoop/etc
-#      - ./notebooks:/opt/notebooks
-#    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
+  jupyter:
+    build:
+      context: hadoop/.
+      target: jupyter_hadoop
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 8888:8888
+    volumes:
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+      - ./notebooks:/opt/notebooks
+    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
 
 #  Вот этого монстра запускай на свой страх и риск
 #  zeppelin:
@@ -150,7 +154,7 @@ networks:
     name: yohoho
 
 volumes:
-  hive-db:
+#  hive-db:
   hdfs1:
   resourcemanager:
   nodemanager1:
