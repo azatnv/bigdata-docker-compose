@@ -132,7 +132,7 @@ services:
       - 8888:8888
     volumes:
       - ./hadoop_conf/etc:/opt/hadoop/etc
-      - ./notebooks:/opt/notebooks
+      - ./:/opt/notebooks
     command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
 
 #  Вот этого монстра запускай на свой страх и риск
