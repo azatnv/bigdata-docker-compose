@@ -42,7 +42,7 @@ ENV HADOOP_CONF_DIR $HADOOP_HOME/etc/hadoop
 
 RUN pip install nltk
 
-#FROM build_hadoop_base AS build_hadoop
+FROM build_hadoop_base AS build_hadoop
 
 #FROM build_hadoop_base AS hive_hadoop_base
 #ENV HIVE_HOME /opt/hive
@@ -57,7 +57,7 @@ RUN pip install nltk
 #FROM hive_hadoop_base AS hive_hadoop
 
 
-FROM build_hadoop_base AS jupyter_hadoop
+FROM build_hadoop AS jupyter_hadoop
 
 WORKDIR /opt
 
