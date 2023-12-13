@@ -74,6 +74,20 @@ services:
       - nodemanager1:/tmp/hadoop-hadoop
       - ./hadoop_conf/etc:/opt/hadoop/etc
 
+  jupyter:
+    build:
+      context: hadoop/.
+      target: jupyter_hadoop
+    env_file:
+      - ./hadoop.env
+    ports:
+      - 8888:8888
+      - 4040:4040
+    volumes:
+      - ./hadoop_conf/etc:/opt/hadoop/etc
+      - ./:/opt/notebooks
+    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
+
 #  postgres:
 #    image: postgres:10
 #    hostname: postgres
@@ -122,18 +136,6 @@ services:
 #      - ./hadoop_conf/etc:/opt/hadoop/etc
 #      - ./hive_conf:/opt/hive/conf
 #
-  jupyter:
-    build:
-      context: hadoop/.
-      target: jupyter_hadoop
-    env_file:
-      - ./hadoop.env
-    ports:
-      - 8888:8888
-    volumes:
-      - ./hadoop_conf/etc:/opt/hadoop/etc
-      - ./:/opt/notebooks
-    command: ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0"]
 
 #  Вот этого монстра запускай на свой страх и риск
 #  zeppelin:
